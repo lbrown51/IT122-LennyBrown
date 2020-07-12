@@ -17,8 +17,8 @@ app.get('/', (req, res) => {
     res.render('home', { team: team.getAll() });
 });
 
-app.get('/detail/:id', (req, res) => {
-    res.render('detail', { item: team.getTeamMember(req.params.id) });
+app.get('/detail', (req, res) => {
+    res.render('detail', { item: team.getTeamMember(req.query.id) });
 });
 
 app.get('/about', (req, res) => {

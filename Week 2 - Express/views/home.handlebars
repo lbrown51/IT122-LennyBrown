@@ -17,8 +17,6 @@
 
 <body>
     <h1>First Node Site</h1>
-    <p>Number of members on the team - <b>{{ numMembers }}</b></p>
-
     <table style="width:100%">
         <tr>
             <th>#</th>
@@ -27,7 +25,7 @@
             <th>Favorite Word</th>
         </tr>
         {{#each team}}
-        <tr class='details-row' onclick="window.location='/detail/{{id}}'">
+        <tr class='details-row' onclick="window.location='/detail/?id={{id}}'">
             <td>{{id}}</td>
             <td>{{firstName}}</td>
             <td>{{lastName}}</td>
