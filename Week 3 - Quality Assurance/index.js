@@ -1,3 +1,4 @@
+'use strict';
 const express = require("express");
 const bodyParser = require("body-parser");
 let exphbs = require("express-handlebars");
@@ -17,7 +18,7 @@ app.get('/', (req, res) => {
 });
 
 app.get('/detail', (req, res) => {
-    res.render('detail', { item: team.getTeamMember(req.query.id) });
+    res.render('detail', { item: team.getItem(req.query.id) });
 });
 
 app.get('/about', (req, res) => {
