@@ -15,7 +15,6 @@
         "ecmaVersion": 11,
         "sourceType": "module"
     },
-    // "ignorePatterns": ["**/*.spec.js"],
     "rules": {
         "prefer-arrow-callback": "warn",
         "no-var": "warn"
