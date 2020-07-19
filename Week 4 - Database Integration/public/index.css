@@ -1,0 +1,33 @@
+table {
+    font-family: arial, sans-serif;
+    border-collapse: collapse;
+    width: 100%;
+}
+  
+td, th {
+    border: 1px solid #dddddd;
+    text-align: left;
+    padding: 8px;
+}
+
+tr {
+    cursor: pointer;
+}
+  
+tr:nth-child(even) {
+    background-color: #dddddd;
+}
+
+div.person-card, div.delete-card {
+    margin: 50px;
+    padding: 10px;
+    border: 1px solid #dddddd;
+}
+
+div.card-actions {
+    padding: 10px;
+}
+
+div.card-actions > a {
+    padding: 10px;
+}
