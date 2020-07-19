@@ -145,7 +145,8 @@ exports.getAll = () => {
 };
 
 exports.getItem = (memberId) => {
-  if (memberId < team.length) return team[memberId - 1];
+  const isIn = (member) => member.id === memberId;
+  if (team.some(isIn)) return team.find(isIn);
   else return false;
 };
 
