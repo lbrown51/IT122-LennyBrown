@@ -4,6 +4,7 @@ const bodyParser = require("body-parser");
 let exphbs = require("express-handlebars");
 
 const Members = require('./models/Members.js');
+const { response } = require("express");
 
 const app = express();
 app.set('port', process.env.PORT || 3000);
@@ -56,8 +57,52 @@ app.get('/about', (req, res) => {
     res.end(`<p style="padding: 50px;">${firstLine}${secondLine}${thirdLine}${fourthLine}</p>`);
 });
 
+
+app.get('/api/members', (req, res) => {
+    return Members.find({}).lean()
+        .then((members) => {
+            res.json(members);
+        })
+        .catch(err => res.status(500).send('Error occurred: database error.'));
+});
+
+app.get('/api/member/:id', (req, res) => {
+    return Members.findOne({ id: req.params.id }).lean()
+        .then((member) => {
+            res.json(member);
+        })
+        .catch(err => res.status(500).send('Error occurred: database error.'));
+});
+
+app.get('/api/delete/:id', (req, res) => {
+    return Members.findOneAndDelete({ id: req.params.id }).lean()
+        .then((member) => {
+            if (member) {
+                res.send(`Member: ${member.firstName} ${member.lastName} deleted successfully`);
+            } 
+            else {
+                res.status(500).send('Error occurred: database error.');
+            }
+        })
+        .catch(err => res.status(500).send('Error occurred: database error.'));
+});
+
+app.post('/api/add', (req, res) => {
+    const { firstName, lastName } = req.body
+    return Members.findOneAndUpdate({ id: req.body.id }, req.body, { upsert: true }).lean()
+        .then((member) => {
+            if (member) {
+                res.send(`Member: ${member.firstName} ${member.lastName} (formerly if you changed first or last name) has been updated successfully.`);
+            }
+            else {
+                res.send(`Member: ${firstName} ${lastName} added successfully.`);
+            }
+        })
+        .catch(err => res.status(500).send('Error occurred: database error.'))
+});
+
+
 app.use( (req, res) => {
-    console.log("TEST2");
     res.type('text/plain');
     res.status(404);
     res.send('404 - Not found');

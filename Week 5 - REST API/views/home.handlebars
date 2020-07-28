@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<!--[if lt IE 7]>      <html class="no-js lt-ie9 lt-ie8 lt-ie7"> <![endif]-->
+<!--[if IE 7]>         <html class="no-js lt-ie9 lt-ie8"> <![endif]-->
+<!--[if IE 8]>         <html class="no-js lt-ie9"> <![endif]-->
+<!--[if gt IE 8]><!-->
+<html class="no-js">
+<!--<![endif]-->
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>Week 2 Homepage</title>
+    <meta name="description" content="">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="/index.css">
+</head>
+
+<body>
+    <h1>First Node Site</h1>
+    <table style="width:100%">
+        <tr>
+            <th>#</th>
+            <th>First Name</th>
+            <th>Last Name</th>
+            <th>Favorite Word</th>
+            <th>Action</th>
+        </tr>
+        {{#each team}}
+        <tr class='details-row' onclick="window.location='/detail/?id={{id}}'">
+            <td>{{id}}</td>
+            <td>{{firstName}}</td>
+            <td>{{lastName}}</td>
+            <td>{{favoriteWord}}</td>
+            <td><a href="/delete/?id={{id}}">Delete</a></td>
+        </tr>
+        {{/each}}
+    </table>
+
+</body>
+
+</html>
