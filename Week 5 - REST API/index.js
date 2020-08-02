@@ -58,7 +58,7 @@ app.get('/about', (req, res) => {
 });
 
 
-app.get('/api/members', (req, res) => {
+app.get('/api/members/getAll', (req, res) => {
     return Members.find({}).lean()
         .then((members) => {
             res.json(members);
@@ -66,7 +66,7 @@ app.get('/api/members', (req, res) => {
         .catch(err => res.status(500).send('Error occurred: database error.'));
 });
 
-app.get('/api/member/:id', (req, res) => {
+app.get('/api/members/get/:id', (req, res) => {
     return Members.findOne({ id: req.params.id }).lean()
         .then((member) => {
             res.json(member);
@@ -74,7 +74,7 @@ app.get('/api/member/:id', (req, res) => {
         .catch(err => res.status(500).send('Error occurred: database error.'));
 });
 
-app.get('/api/delete/:id', (req, res) => {
+app.get('/api/members/delete/:id', (req, res) => {
     return Members.findOneAndDelete({ id: req.params.id }).lean()
         .then((member) => {
             if (member) {
@@ -87,7 +87,7 @@ app.get('/api/delete/:id', (req, res) => {
         .catch(err => res.status(500).send('Error occurred: database error.'));
 });
 
-app.post('/api/add', (req, res) => {
+app.post('/api/members/add', (req, res) => {
     const { firstName, lastName } = req.body
     return Members.findOneAndUpdate({ id: req.body.id }, req.body, { upsert: true }).lean()
         .then((member) => {
