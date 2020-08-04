@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<!--[if lt IE 7]>      <html class="no-js lt-ie9 lt-ie8 lt-ie7"> <![endif]-->
+<!--[if IE 7]>         <html class="no-js lt-ie9 lt-ie8"> <![endif]-->
+<!--[if IE 8]>         <html class="no-js lt-ie9"> <![endif]-->
+<!--[if gt IE 8]><!-->
+<html class="no-js">
+<!--<![endif]-->
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>Week 2 Homepage</title>
+    <meta name="description" content="">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="/index.css">
+    <script src="https://unpkg.com/react@16/umd/react.development.js"></script>
+    <script src="https://unpkg.com/react-dom@16/umd/react-dom.development.js"></script>
+    <script src="https://unpkg.com/babel-standalone@6.15.0/babel.min.js"></script>
+
+</head>
+
+<body>
+    <div id="root" />
+
+    <script type="text/babel">
+        class App extends React.Component {
+            constructor(props) {
+                super(props);
+                // Set initial state using data from server application
+                this.state = {
+                    team: {{{ team }}},
+                    curTeamMember: null // current selected item
+                };
+
+            }
+
+            render() {
+
+                if (this.state.curTeamMember === null) {
+                    // window.location = `/detail/?id=${member.id}`
+                    return (
+                        <div>
+                            <h1>First Node Site</h1>
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>#</th>
+                                        <th>First Name</th>
+                                        <th>Last Name</th>
+                                        <th>Favorite Word</th>
+                                        <th>Action</th>
+                                    </tr>
+                                </thead>
+
+                                <tbody>
+                                    {this.state.team.map((member, index) => {
+                                        return (
+                                            <tr key={member._id} className='details-row' onClick={() => { this.setState({ curTeamMember: index }) }}>
+                                                <td>{member.id}</td>
+                                                <td>{member.firstName}</td>
+                                                <td>{member.lastName}</td>
+                                                <td>{member.favoriteWord}</td>
+                                                <td><a href={`/delete/?id=${member.id}`}>Delete</a></td>
+                                            </tr>
+                                        )
+                                    })}
+                                </tbody>
+                            </table>
+                        </div>
+                    )
+                }
+                else {
+                    const member = this.state.team[this.state.curTeamMember]
+                    return (
+                        <div className="person-card">
+                            <div className="card-title">
+                                <h1>{{ member.firstName }} {{ member.lastName }}</h1>
+                            </div>
+                            <h2>ID: { member.id }</h2>
+                            <h4>Important Skill: { member.skill }</h4>
+                            <h4>Favorite Word: { member.favoriteWord }</h4>
+                            <p>Favorite Phrase: { member.favoritePhrase }</p>
+                            <div className="card-actions">
+                                <a href="#" onClick={ () => { this.setState({ curTeamMember: null }) } }>Back</a>
+                                <a href={`/delete/?id=${member.id}`}>Delete</a>
+                            </div>
+                        </div >
+                    )
+                }
+            }
+        }
+
+        ReactDOM.render(<App />, document.getElementById('root'));
+    </script>
+</body>
+
+</html>

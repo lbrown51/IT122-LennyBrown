@@ -1,0 +1,15 @@
+<link rel="stylesheet" href="/index.css">
+<div class="delete-card">
+    <div className="card-title">
+        <h1>Deletion {{status}}</h1>
+    </div>
+    {{#if member}}
+    <h2>Information: </h2>
+    <h3>ID: {{member.id}}</h2> 
+    <h3>Name: {{member.firstName}} {{member.lastName}}</h3>
+    <h4>Important Skill: {{member.skill}}</h4>
+    <h4>Favorite Word: {{member.favoriteWord}}</h4>
+    <p>Favorite Phrase: {{member.favoritePhrase}}</p>
+    <a href="/">Back</a>
+    {{/if}}
+</div>
