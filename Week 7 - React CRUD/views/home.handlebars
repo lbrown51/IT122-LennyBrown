@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<!--[if lt IE 7]>      <html class="no-js lt-ie9 lt-ie8 lt-ie7"> <![endif]-->
+<!--[if IE 7]>         <html class="no-js lt-ie9 lt-ie8"> <![endif]-->
+<!--[if IE 8]>         <html class="no-js lt-ie9"> <![endif]-->
+<!--[if gt IE 8]><!-->
+<html class="no-js">
+<!--<![endif]-->
+
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <title>Week 2 Homepage</title>
+  <meta name="description" content="">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="/index.css">
+  <script src="https://unpkg.com/react@16/umd/react.development.js"></script>
+  <script src="https://unpkg.com/react-dom@16/umd/react-dom.development.js"></script>
+  <script src="https://unpkg.com/babel-standalone@6.15.0/babel.min.js"></script>
+
+</head>
+
+<body>
+  <div id="root" />
+
+  <script type="text/babel">
+    class App extends React.Component {
+      constructor(props) {
+        super(props);
+        // Set initial state using data from server application
+        this.state = {
+          team: {{{ team }}}, 
+          curTeamMember: null, 
+          editMember: false, 
+          editMemberInfo: null
+        }
+      };
+
+      handleChange = (event) => {
+        const member = this.state.editMemberInfo;
+        member[event.target.id] = event.target.value;
+        this.setState({ editMemberInfo: member });
+      }
+
+      handleSubmit = (event) => {
+        const editMemberInfo = this.state.editMemberInfo;
+        if (editMemberInfo.id === 0) {
+          editMemberInfo.id = this.state.team[this.state.team.length - 1].id + 1;
+          delete editMemberInfo._id;
+        }
+        console.log(editMemberInfo);
+        fetch("/api/members/upsert", {
+          method: "POST",
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(editMemberInfo)
+        })
+          .then((res) => res.json())
+          .then((member) => {
+            alert("Change Successful!");
+            const team = this.state.team
+            console.log(member);
+            if (this.state.curTeamMember === 0) {
+              team.push(editMemberInfo);
+            } else {
+              team[this.state.curTeamMember] = member;
+            }
+            this.setState({ team, editMember: false, editMemberInfo: null });
+          });
+      }
+
+      render() {
+        if (this.state.curTeamMember === null) {
+          const TableHeader = () => (
+            <thead>
+              <tr>
+                <th>#</th>
+                <th>First Name</th>
+                <th>Last Name</th>
+                <th>Favorite Word</th>
+                <th>Action</th>
+              </tr>
+            </thead>
+          );
+
+          const TableBody = () => (
+            <tbody>
+              {this.state.team.map((member, index) => {
+                if (member.id === 0) return;
+                return (
+                  <tr
+                    key={member._id}
+                    className="details-row"
+                    onClick={() => {
+                      this.setState({ curTeamMember: index });
+                    }}
+                  >
+                    <td>{member.id}</td>
+                    <td>{member.firstName}</td>
+                    <td>{member.lastName}</td>
+                    <td>{member.favoriteWord}</td>
+                    <td className="member-actions-row">
+                      <a href="#" onClick={() => {
+                          this.setState({ curTeamMember: index, editMember: true, editMemberInfo: this.state.team[index] });
+                        }}>Edit
+                      </a>
+                      <a href={`/delete/?id=${member.id}`}>Delete</a>
+                    </td>
+                  </tr>
+                );
+              })}
+            </tbody>
+          );
+          // window.location = `/detail/?id=${member.id}`
+          return (
+            <div>
+              <h1>First Node Site</h1>
+              <button className="new-member-btn" onClick={() => { this.setState({ curTeamMember: 0, editMember: true, editMemberInfo: this.state.team[0] })}}>Add New Member</button>
+              <table>
+                <TableHeader />
+                <TableBody />
+              </table>
+            </div>
+          );
+        }
+        else if (this.state.editMember === true) {
+          const member = this.state.team[this.state.curTeamMember];
+
+          const MemberHeader = () => (
+            <div className="card-title">
+              <h2 className="edit-name-h1">
+                Name: 
+                <input type="text" id="firstName" value={this.state.editMemberInfo.firstName} placeholder="First Name" onChange={this.handleChange} /> 
+                <input type="text" id="lastName" defaultValue={member.lastName} placeholder="Last Name" onChange={this.handleChange} />
+              </h2>
+            </div>
+          );
+
+          const MemberInfo = () => (
+            <div>
+              <h4>Important Skill: <input type="text" id="skill" defaultValue={member.skill} placeholder="Skill" onChange={this.handleChange} /></h4>
+              <h4>Favorite Word: <input type="text" id="favoriteWord" defaultValue={member.favoriteWord} placeholder="Favorite Word" onChange={this.handleChange} /></h4>
+              <p>Favorite Phrase:</p>
+              <textarea id="favoritePhrase" defaultValue={member.favoritePhrase} placeholder="Favorite Phrase" onChange={this.handleChange} />
+            </div>
+          );
+
+          const MemberActions = () => (
+            <div className="card-actions">
+              <a href="#" onClick={() => { this.setState({ curTeamMember: null, editMember: false, editMemberInfo: false }) }}>Back</a>
+              <a href="#" onClick={this.handleSubmit}>Save</a>
+              <a href={`/delete/?id=${member.id}`}>Delete</a>
+            </div>
+          );
+
+          return (
+            <div className="person-card">
+              <div className="card-title">
+                <h2 className="edit-name-h1">
+                  Name:
+                <input type="text" id="firstName" value={this.state.editMemberInfo.firstName} placeholder="First Name" onChange={this.handleChange} />
+                  <input type="text" id="lastName" value={this.state.editMemberInfo.lastName} placeholder="Last Name" onChange={this.handleChange} />
+                </h2>
+              </div>
+              <div>
+                <h4>Important Skill: <input type="text" id="skill" value={this.state.editMemberInfo.skill} placeholder="Skill" onChange={this.handleChange} /></h4>
+                <h4>Favorite Word: <input type="text" id="favoriteWord" value={this.state.editMemberInfo.favoriteWord} placeholder="Favorite Word" onChange={this.handleChange} /></h4>
+                <p>Favorite Phrase:</p>
+                <textarea id="favoritePhrase" value={this.state.editMemberInfo.favoritePhrase} placeholder="Favorite Phrase" onChange={this.handleChange} />
+              </div>
+              <MemberActions />
+            </div >
+          )
+        }
+        else {
+          const member = this.state.team[this.state.curTeamMember]
+
+          const MemberHeader = () => (
+            <div className="card-title">
+              <h1>{ member.firstName } { member.lastName }</h1>
+            </div>
+          );
+
+          const MemberInfo = () => (
+            <div>
+              <h2>ID: {member.id}</h2>
+              <h4>Important Skill: {member.skill}</h4>
+              <h4>Favorite Word: {member.favoriteWord}</h4>
+              <p>Favorite Phrase: {member.favoritePhrase}</p>
+            </div>
+          );
+
+          const MemberActions = () => (
+            <div className="card-actions">
+              <a href="#" onClick={() => { this.setState({ curTeamMember: null }) }}>Back</a>
+              <a href="#" onClick={() => { this.setState({ editMember: true, editMemberInfo: member }) }}>Edit</a>
+              <a href={`/delete/?id=${member.id}`}>Delete</a>
+            </div>
+          );
+
+          return (
+            <div className="person-card">
+              <MemberHeader />
+              <MemberInfo />
+              <MemberActions />
+            </div >
+          )
+        }
+      }
+    }
+
+    ReactDOM.render(<App />, document.getElementById('root'));
+  </script>
+</body>
+
+</html>

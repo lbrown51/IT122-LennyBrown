@@ -1,0 +1,14 @@
+<link rel="stylesheet" href="/index.css">
+<div class="person-card">
+    <div className="card-title">
+        <h1>{{member.firstName}} {{member.lastName}}</h1>
+    </div>
+    <h2>ID: {{member.id}}</h2> 
+    <h4>Important Skill: {{member.skill}}</h4>
+    <h4>Favorite Word: {{member.favoriteWord}}</h4>
+    <p>Favorite Phrase: {{member.favoritePhrase}}</p>
+    <div class="card-actions">
+        <a href="/">Back</a>
+        <a href="/delete/?id={{member.id}}">Delete</a>
+    </div>
+</div>

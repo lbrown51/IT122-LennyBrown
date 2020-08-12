@@ -1,0 +1,23 @@
+{
+    "env": {
+        "browser": true,
+        "es2020": true,
+        "node": true,
+        "mocha": true
+    },
+    "plugins": [
+        "mocha"
+    ],
+    "extends": [
+        "eslint:recommended"
+    ],
+    "parserOptions": {
+        "ecmaVersion": 11,
+        "sourceType": "module"
+    },
+    "rules": {
+        "prefer-arrow-callback": "warn",
+        "no-var": "warn",
+        "indent": ["error", 2]
+    }
+}
