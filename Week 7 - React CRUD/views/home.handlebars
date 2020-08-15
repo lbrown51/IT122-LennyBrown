@@ -16,6 +16,10 @@
   <script src="https://unpkg.com/react@16/umd/react.development.js"></script>
   <script src="https://unpkg.com/react-dom@16/umd/react-dom.development.js"></script>
   <script src="https://unpkg.com/babel-standalone@6.15.0/babel.min.js"></script>
+  <script
+  src="https://code.jquery.com/jquery-3.5.1.min.js"
+  integrity="sha256-9/aliU8dGd2tb6OSsuzixeV4y/faTqgFtohetphbbj0="
+  crossorigin="anonymous"></script>
 
 </head>
 
@@ -31,9 +35,14 @@
           team: {{{ team }}}, 
           curTeamMember: null, 
           editMember: false, 
-          editMemberInfo: null
+          editMemberInfo: null,
+          deletedMemberInfo: null
         }
       };
+
+      handleEdit = (index, member) => {
+        this.setState({ curTeamMember: index, editMember: true, editMemberInfo: member })
+      }
 
       handleChange = (event) => {
         const member = this.state.editMemberInfo;
@@ -47,8 +56,7 @@
           editMemberInfo.id = this.state.team[this.state.team.length - 1].id + 1;
           delete editMemberInfo._id;
         }
-        console.log(editMemberInfo);
-        fetch("/api/members/upsert", {
+        fetch('/api/members/upsert', {
           method: "POST",
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(editMemberInfo)
@@ -57,17 +65,51 @@
           .then((member) => {
             alert("Change Successful!");
             const team = this.state.team
-            console.log(member);
             if (this.state.curTeamMember === 0) {
               team.push(editMemberInfo);
+              this.setState({ team, editMember: false, editMemberInfo: null, curTeamMember: this.state.team.length - 1 });
             } else {
-              team[this.state.curTeamMember] = member;
+              team[this.state.curTeamMember] = editMemberInfo;
+              this.setState({ team, editMember: false, editMemberInfo: null });
             }
-            this.setState({ team, editMember: false, editMemberInfo: null });
           });
       }
 
+      handleDelete = (id, index) => {
+        fetch(`/api/members/delete/${id}`)
+          .then((res) => res.json())
+          .then((member) => {
+            const team = this.state.team;
+            team.splice(index, index);
+
+            if (this.state.editMember) {
+              this.setState({ deletedMemberInfo: member, editMember: false, editMemberInfo: null });
+            }
+            else {
+              this.setState({ deletedMemberInfo: member });
+            }
+          })
+      }
+
+      handleClear = () => {
+        $('input#firstName')[0].value = '';
+        $('input#lastName')[0].value = '';
+        $('input#skill')[0].value = '';
+        $('input#favoriteWord')[0].value = '';
+        $('textarea#favoritePhrase')[0].value = '';
+        this.setState({ editMemberInfo: this.state.team[0] });
+      }
+
       render() {
+        const emptyMember = {
+          "id": 0,
+          "firstName": "",
+          "lastName": "",
+          "favoriteWord": "",
+          "favoritePhrase": "",
+          "skill": ""
+        }
+
         if (this.state.curTeamMember === null) {
           const TableHeader = () => (
             <thead>
@@ -98,22 +140,18 @@
                     <td>{member.lastName}</td>
                     <td>{member.favoriteWord}</td>
                     <td className="member-actions-row">
-                      <a href="#" onClick={() => {
-                          this.setState({ curTeamMember: index, editMember: true, editMemberInfo: this.state.team[index] });
-                        }}>Edit
-                      </a>
-                      <a href={`/delete/?id=${member.id}`}>Delete</a>
+                      <a href="#" onClick={() => this.handleEdit(index, this.state.team[index])}>Edit</a>
+                      <a href='#' onClick={() => this.handleDelete(member.id, index)}>Delete</a>
                     </td>
                   </tr>
                 );
               })}
             </tbody>
           );
-          // window.location = `/detail/?id=${member.id}`
           return (
             <div>
               <h1>First Node Site</h1>
-              <button className="new-member-btn" onClick={() => { this.setState({ curTeamMember: 0, editMember: true, editMemberInfo: this.state.team[0] })}}>Add New Member</button>
+              <button className="new-member-btn" onClick={() => this.handleEdit(0, emptyMember) }>Add New Member</button>
               <table>
                 <TableHeader />
                 <TableBody />
@@ -145,9 +183,10 @@
 
           const MemberActions = () => (
             <div className="card-actions">
-              <a href="#" onClick={() => { this.setState({ curTeamMember: null, editMember: false, editMemberInfo: false }) }}>Back</a>
+              <a href="#" onClick={() => { this.setState({ curTeamMember: null, editMember: false, editMemberInfo: null }) }}>Back</a>
               <a href="#" onClick={this.handleSubmit}>Save</a>
-              <a href={`/delete/?id=${member.id}`}>Delete</a>
+              <a href="#" onClick={() => { this.handleDelete(member.id, this.state.curTeamMember) }}>Delete</a>
+              <a href="#" onClick={this.handleClear}>Clear</a>
             </div>
           );
 
@@ -171,11 +210,11 @@
           )
         }
         else {
-          const member = this.state.team[this.state.curTeamMember]
+          const member = this.state.deletedMemberInfo ? this.state.deletedMemberInfo : this.state.team[this.state.curTeamMember]
 
           const MemberHeader = () => (
             <div className="card-title">
-              <h1>{ member.firstName } { member.lastName }</h1>
+              <h1>{ member.firstName } { member.lastName } { this.state.deletedMemberInfo && 'Deleted' } </h1>
             </div>
           );
 
@@ -190,9 +229,9 @@
 
           const MemberActions = () => (
             <div className="card-actions">
-              <a href="#" onClick={() => { this.setState({ curTeamMember: null }) }}>Back</a>
-              <a href="#" onClick={() => { this.setState({ editMember: true, editMemberInfo: member }) }}>Edit</a>
-              <a href={`/delete/?id=${member.id}`}>Delete</a>
+              <a href="#" onClick={() => { this.setState({ curTeamMember: null, deletedMemberInfo: null, editMemberInfo: null }) }}>Back</a>
+              {!this.state.deletedMemberInfo && <a href="#" onClick={() => this.handleEdit(this.curTeamMember, member)}>Edit</a>}
+              {!this.state.deletedMemberInfo && <a href="#" onClick={() => this.handleDelete(member.id, this.state.curTeamMember)}>Delete</a>}
             </div>
           );
 

@@ -78,7 +78,8 @@ app.get('/api/members/delete/:id', (req, res) => {
   return Members.findOneAndDelete({ id: req.params.id }).lean()
     .then((member) => {
       if (member) {
-        res.send(`Member: ${member.firstName} ${member.lastName} deleted successfully`);
+        // res.send(`Member: ${member.firstName} ${member.lastName} deleted successfully`);
+        res.json(member);
       } 
       else {
         res.status(500).send('Error occurred: database error.');
@@ -88,8 +89,7 @@ app.get('/api/members/delete/:id', (req, res) => {
 });
 
 app.post('/api/members/upsert', (req, res) => {
-  console.log(req.body);
-  const { firstName, lastName } = req.body
+  // const { firstName, lastName } = req.body
   return Members.findOneAndUpdate({ id: req.body.id }, req.body, { upsert: true }).lean()
     .then((member) => {
       if (member) {
